@@ -1,3 +1,7 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
@@ -6,17 +10,28 @@ datasource db {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model Category {
-  id      BigInt    @id @default(autoincrement())
-  name    String?   @db.VarChar
-  Product Product[]
+  id               Int                @id @default(autoincrement())
+  name             String?            @db.VarChar
+  product_category product_category[]
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model Product {
-  id          BigInt    @id @default(autoincrement())
-  name        String    @db.VarChar
-  image       String?   @db.VarChar
-  description String?   @db.VarChar
-  id_category BigInt?
-  Category    Category? @relation(fields: [id_category], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id               Int                @id @default(autoincrement())
+  name             String             @db.VarChar
+  image            String?            @db.VarChar
+  description      String?            @db.VarChar
+  price            Float?             @db.Real
+  product_category product_category[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model product_category {
+  id          Int       @id @default(autoincrement())
+  created_at  DateTime? @db.Date
+  id_category Int?
+  id_product  Int?
+  Category    Category? @relation(fields: [id_category], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  Product     Product?  @relation(fields: [id_product], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
