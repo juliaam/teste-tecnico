@@ -21,12 +21,12 @@ export class ProductService {
     return this.prisma.product.findFirst(optFind);
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
+  update(id: number, data: UpdateProductDto) {
     return this.prisma.product.update({
       where: {
         id: id,
       },
-      data: updateProductDto,
+      data: data,
     });
   }
 
