@@ -23,6 +23,21 @@ export class MenuController {
     return { menu, message: handleMessage('create') };
   }
 
+  @Get('/daytime')
+  async getByDayTime() {
+    const hour = new Date('2024-05-10T04:04:00').getHours();
+    const daytime = hour >= 4 && hour <= 18 ? 'day' : 'night';
+
+    const opt = {
+      where: {
+        daytime: daytime,
+      },
+    };
+
+    const menu = await this.menuService.findOne(opt);
+    return menu;
+  }
+
   @Get()
   findAll() {
     const options = {};
