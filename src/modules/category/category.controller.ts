@@ -49,8 +49,16 @@ export class CategoryController {
 
   @Patch(':id')
   async update(@Param('id') id: string, @Body() body: UpdateCategoryDto) {
-    const category = await this.categoryService.update(+id, body);
-    return { category, message: handleMessage('update') };
+    const category = await this.categoryService.findOne({
+      where: { id: +id },
+    });
+
+    if (!category) {
+      throw new NotFoundException('Produto não encontrado');
+    }
+
+    const newCategory = await this.categoryService.update(+id, body);
+    return { newCategory, message: handleMessage('update') };
   }
 
   @Delete(':id')

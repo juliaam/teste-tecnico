@@ -12,7 +12,6 @@ import { MenuService } from './menu.service';
 import { CreateMenuDto } from './dto/create-menu.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
 import { handleMessage } from 'src/helpers/SucessMessage';
-import { OptionsFind } from 'src/types/OptionsFind';
 
 @Controller('menu')
 export class MenuController {
@@ -49,8 +48,16 @@ export class MenuController {
 
   @Patch(':id')
   async update(@Param('id') id: string, @Body() body: UpdateMenuDto) {
-    const menu = await this.menuService.update(+id, body);
-    return { menu, message: handleMessage('update') };
+    const menu = await this.menuService.findOne({
+      where: { id: +id },
+    });
+
+    if (!menu) {
+      throw new NotFoundException('Produto não encontrado');
+    }
+
+    const newMenu = await this.menuService.update(+id, body);
+    return { newMenu, message: handleMessage('update') };
   }
 
   @Delete(':id')
