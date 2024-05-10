@@ -12,7 +12,6 @@ import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { handleMessage } from 'src/helpers/SucessMessage';
-import { Prisma } from '@prisma/client';
 import { OptionsFind } from 'src/types/OptionsFind';
 
 @Controller('category')
@@ -32,24 +31,12 @@ export class CategoryController {
   }
 
   @Get(':id')
-  async findOne(
-    @Param('id') id: string,
-    include?: Prisma.categoryInclude,
-    select?: Prisma.categorySelect,
-  ) {
+  async findOne(@Param('id') id: string) {
     const optFind: OptionsFind = {
       where: {
         id: +id,
       },
     };
-
-    if (include) {
-      optFind.include = include;
-    }
-
-    if (select) {
-      optFind.select = select;
-    }
 
     const category = await this.categoryService.findOne(optFind);
 

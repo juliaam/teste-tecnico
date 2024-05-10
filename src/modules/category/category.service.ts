@@ -2,8 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { OptionsFind } from 'src/types/OptionsFind';
-
 @Injectable()
 export class CategoryService {
   constructor(private prisma: PrismaService) {}
@@ -24,7 +22,7 @@ export class CategoryService {
     return { rows: category, count };
   }
 
-  findOne(optFind: OptionsFind) {
+  findOne(optFind) {
     return this.prisma.category.findFirst(optFind);
   }
 

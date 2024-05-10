@@ -37,3 +37,10 @@ model product {
   price            Float?             @db.Real
   product_category product_category[]
 }
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model menu {
+  id         BigInt    @id @default(autoincrement())
+  name       String?   @db.VarChar
+  created_at DateTime? @default(dbgenerated("(now() AT TIME ZONE 'utc'::text)")) @db.Timestamptz(6)
+}
