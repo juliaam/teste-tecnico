@@ -32,13 +32,20 @@ export class CategoryController {
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    const optFind: OptionsFind = {
+    const optionsFind = {
       where: {
         id: +id,
       },
+      include: {
+        product_category: {
+          select: {
+            product: true,
+          },
+        },
+      },
     };
 
-    const category = await this.categoryService.findOne(optFind);
+    const category = await this.categoryService.findOne(optionsFind);
 
     if (!category) {
       throw new NotFoundException('Produto não encontrado');
