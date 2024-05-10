@@ -27,14 +27,15 @@ export class CategoryController {
 
   @Get()
   findAll() {
-    return this.categoryService.findAll();
+    const options = {};
+    return this.categoryService.findAll(options);
   }
 
   @Get(':id')
   async findOne(
     @Param('id') id: string,
-    include?: Prisma.CategoryInclude,
-    select?: Prisma.CategorySelect,
+    include?: Prisma.categoryInclude,
+    select?: Prisma.categorySelect,
   ) {
     const optFind: OptionsFind = {
       where: {
@@ -60,11 +61,8 @@ export class CategoryController {
   }
 
   @Patch(':id')
-  async update(
-    @Param('id') id: string,
-    @Body() updateCategoryDto: UpdateCategoryDto,
-  ) {
-    const category = await this.categoryService.update(+id, updateCategoryDto);
+  async update(@Param('id') id: string, @Body() body: UpdateCategoryDto) {
+    const category = await this.categoryService.update(+id, body);
     return { category, message: handleMessage('update') };
   }
 

@@ -14,8 +14,14 @@ export class CategoryService {
     });
   }
 
-  findAll() {
-    return `This action returns all category`;
+  async findAll(options) {
+    const [category, count] = await Promise.all([
+      this.prisma.category.findMany(options),
+      this.prisma.category.count({
+        where: options.where || {},
+      }),
+    ]);
+    return { rows: category, count };
   }
 
   findOne(optFind: OptionsFind) {
