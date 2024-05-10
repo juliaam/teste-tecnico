@@ -13,7 +13,6 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { OptionsFind } from 'src/types/OptionsFind';
 
-import { Prisma } from '@prisma/client';
 import { handleMessage } from 'src/helpers/SucessMessage';
 
 @Controller('product')
@@ -21,37 +20,34 @@ export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
   @Post()
-  async create(@Body() createProductDto: CreateProductDto) {
-    const product = await this.productService.create(createProductDto);
+  async create(@Body() body: CreateProductDto) {
+    const product = await this.productService.create(body);
+
     return { product, message: handleMessage('create') };
   }
 
   @Get()
   findAll() {
-    return this.productService.findAll();
+    const options = {};
+    return this.productService.findAll(options);
   }
 
   @Get(':id')
-  async findOne(
-    @Param('id') id: string,
-    include?: Prisma.ProductInclude,
-    select?: Prisma.ProductSelect,
-  ) {
-    const optFind: OptionsFind = {
+  async findOne(@Param('id') id: string) {
+    const optionsFind: OptionsFind = {
       where: {
         id: +id,
       },
+      include: {
+        product_category: {
+          include: {
+            category: true,
+          },
+        },
+      },
     };
 
-    if (include) {
-      optFind.include = include;
-    }
-
-    if (select) {
-      optFind.select = select;
-    }
-
-    const product = await this.productService.findOne(optFind);
+    const product = await this.productService.findOne(optionsFind);
 
     if (!product) {
       throw new NotFoundException('Produto não encontrado');
@@ -61,12 +57,17 @@ export class ProductController {
   }
 
   @Patch(':id')
-  async update(
-    @Param('id') id: string,
-    @Body() updateProductDto: UpdateProductDto,
-  ) {
-    const product = await this.productService.update(+id, updateProductDto);
-    return { product, message: handleMessage('update') };
+  async update(@Param('id') id: string, @Body() body: UpdateProductDto) {
+    const product = await this.productService.findOne({
+      where: { id: +id },
+    });
+
+    if (!product) {
+      throw new NotFoundException('Produto não encontrado');
+    }
+
+    const newProduct = await this.productService.update(+id, body);
+    return { newProduct, message: handleMessage('update') };
   }
 
   @Delete(':id')

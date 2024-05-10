@@ -12,7 +12,7 @@ datasource db {
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model product_category {
   id          Int       @id @default(autoincrement())
-  created_at  DateTime? @db.Date
+  created_at  DateTime  @default(dbgenerated("(now() AT TIME ZONE 'utc'::text)")) @db.Timestamptz(6)
   id_category Int?
   id_product  Int?
   category    category? @relation(fields: [id_category], references: [id], onDelete: NoAction, onUpdate: NoAction)

@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateProductDto {
   @IsNotEmpty({ message: 'O preço não pode ser vazio' })
@@ -16,4 +22,8 @@ export class CreateProductDto {
   @IsNotEmpty({ message: 'A descrição não pode ser vazia' })
   @IsString({ message: 'A descrição deve ser um texto' })
   description: string;
+
+  @IsOptional()
+  @IsArray()
+  categorys?: Array<number>;
 }
