@@ -3,14 +3,9 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Prisma } from '@prisma/client';
-import { ProductCategoryService } from 'src/services/product-category.service';
-
 @Injectable()
 export class ProductService {
-  constructor(
-    private prisma: PrismaService,
-    private readonly productCategoryService: ProductCategoryService,
-  ) {}
+  constructor(private prisma: PrismaService) {}
   async create(body: CreateProductDto) {
     const { categorys, ...rest } = body;
 
@@ -20,13 +15,12 @@ export class ProductService {
       });
 
       if (categorys) {
-        await this.productCategoryService.createMany(
-          categorys.map((categoryId) => ({
+        await tx.product_category.createMany({
+          data: categorys.map((categoryId) => ({
             id_category: categoryId,
             id_product: product.id,
           })),
-          tx,
-        );
+        });
       }
 
       const productResult = await tx.product.findFirst({
