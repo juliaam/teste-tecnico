@@ -32,6 +32,13 @@ export class MenuController {
       where: {
         daytime: daytime,
       },
+      include: {
+        menu_product: {
+          select: {
+            product: true,
+          },
+        },
+      },
     };
 
     const menu = await this.menuService.findOne(opt);
