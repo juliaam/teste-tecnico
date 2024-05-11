@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMenuDto } from './dto/create-menu.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -23,8 +23,12 @@ export class MenuService {
     return { rows: menu, count };
   }
 
-  findOne(optFind) {
-    return this.prisma.menu.findFirst(optFind);
+  async findOne(optFind) {
+    try {
+      return await this.prisma.menu.findFirstOrThrow(optFind);
+    } catch (error) {
+      throw new NotFoundException('Produto não encontrado');
+    }
   }
 
   update(id: number, body: UpdateMenuDto) {

@@ -54,10 +54,6 @@ export class MenuController {
 
     const menu = await this.menuService.findOne(optFind);
 
-    if (!menu) {
-      throw new NotFoundException('Produto não encontrado');
-    }
-
     return { menu, message: handleMessage('read') };
   }
 
@@ -77,7 +73,20 @@ export class MenuController {
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    const menu = await this.menuService.remove(+id);
-    return { menu, message: handleMessage('delete') };
+    const opt = {
+      where: {
+        id: +id,
+      },
+    };
+
+    const menu = await this.menuService.findOne(opt);
+
+    if (!menu) {
+      throw new NotFoundException('Produto não encontrado');
+    }
+
+    const deletedMenu = await this.menuService.remove(+id);
+
+    return { deletedMenu, message: handleMessage('delete') };
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -22,8 +22,12 @@ export class CategoryService {
     return { rows: category, count };
   }
 
-  findOne(optFind) {
-    return this.prisma.category.findFirst(optFind);
+  async findOne(optFind) {
+    try {
+      return await this.prisma.category.findFirstOrThrow(optFind);
+    } catch (error) {
+      throw new NotFoundException('Produto não encontrado');
+    }
   }
 
   update(id: number, data: UpdateCategoryDto) {

@@ -49,10 +49,6 @@ export class ProductController {
 
     const product = await this.productService.findOne(optionsFind);
 
-    if (!product) {
-      throw new NotFoundException('Produto não encontrado');
-    }
-
     return { product, message: handleMessage('read') };
   }
 
@@ -72,7 +68,20 @@ export class ProductController {
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    const product = await this.productService.remove(+id);
-    return { product, message: handleMessage('delete') };
+    const opt = {
+      where: {
+        id: +id,
+      },
+    };
+
+    const product = await this.productService.findOne(opt);
+
+    if (!product) {
+      throw new NotFoundException('Produto não encontrado');
+    }
+
+    const deletedProduct = await this.productService.remove(+id);
+
+    return { deletedProduct, message: handleMessage('delete') };
   }
 }

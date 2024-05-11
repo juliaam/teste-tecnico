@@ -47,10 +47,6 @@ export class CategoryController {
 
     const category = await this.categoryService.findOne(optionsFind);
 
-    if (!category) {
-      throw new NotFoundException('Produto não encontrado');
-    }
-
     return { category, message: handleMessage('read') };
   }
 
@@ -70,7 +66,20 @@ export class CategoryController {
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    const category = await this.categoryService.remove(+id);
-    return { category, message: handleMessage('delete') };
+    const opt = {
+      where: {
+        id: +id,
+      },
+    };
+
+    const category = await this.categoryService.findOne(opt);
+
+    if (!category) {
+      throw new NotFoundException('Produto não encontrado');
+    }
+
+    const deletedCategory = await this.categoryService.remove(+id);
+
+    return { deletedCategory, message: handleMessage('delete') };
   }
 }
