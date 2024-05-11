@@ -11,9 +11,10 @@ import {
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { OptionsFind } from 'src/types/OptionsFind';
+import { Options } from 'src/types/OptionsFind';
 
 import { handleMessage } from 'src/helpers/SucessMessage';
+import { Prisma } from '@prisma/client';
 
 @Controller('product')
 export class ProductController {
@@ -34,7 +35,7 @@ export class ProductController {
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    const options: OptionsFind = {
+    const options: Options<Prisma.productInclude, Prisma.productSelect> = {
       where: {
         id: +id,
       },

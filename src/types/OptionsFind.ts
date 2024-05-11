@@ -1,7 +1,7 @@
-export interface OptionsFind {
+export interface Options<include, select> {
   where: {
     id: number;
   };
-  include?: object;
-  select?: object;
+  include?: include;
+  select?: select;
 }

@@ -2,6 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMenuDto } from './dto/create-menu.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { Options } from 'src/types/OptionsFind';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class MenuService {
@@ -23,7 +25,11 @@ export class MenuService {
     return { rows: menu, count };
   }
 
-  async findOne(optFind) {
+  async findOne(optFind: {
+    where: object;
+    include?: Prisma.menuInclude;
+    select?: Prisma.menuSelect;
+  }) {
     try {
       return await this.prisma.menu.findFirstOrThrow(optFind);
     } catch (error) {

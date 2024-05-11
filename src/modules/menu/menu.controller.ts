@@ -12,6 +12,8 @@ import { MenuService } from './menu.service';
 import { CreateMenuDto } from './dto/create-menu.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
 import { handleMessage } from 'src/helpers/SucessMessage';
+import { Prisma } from '@prisma/client';
+import { Options } from 'src/types/OptionsFind';
 
 @Controller('menu')
 export class MenuController {

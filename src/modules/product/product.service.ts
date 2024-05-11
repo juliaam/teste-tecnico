@@ -3,6 +3,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Prisma } from '@prisma/client';
+import { Options } from 'src/types/OptionsFind';
 @Injectable()
 export class ProductService {
   constructor(private prisma: PrismaService) {}
@@ -21,15 +22,9 @@ export class ProductService {
     return { rows: product, count };
   }
 
-  async findOne(optionsFind: {
-    where?: {
-      id: number;
-    };
-    include?: Prisma.productInclude;
-    select?: Prisma.productSelect;
-  }) {
+  async findOne(options: Options<Prisma.productInclude, Prisma.productSelect>) {
     try {
-      return await this.prisma.product.findFirstOrThrow(optionsFind);
+      return await this.prisma.product.findFirstOrThrow(options);
     } catch (error) {
       throw new NotFoundException(error.message);
     }
