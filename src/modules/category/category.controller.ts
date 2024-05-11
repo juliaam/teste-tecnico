@@ -32,12 +32,12 @@ export class CategoryController {
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    const options = {
+    const options: OptionsFind = {
       where: {
         id: +id,
       },
       include: {
-        other_product: true,
+        product: true,
       },
     };
 
