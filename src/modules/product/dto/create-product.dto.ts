@@ -1,5 +1,4 @@
 import {
-  IsArray,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -24,6 +23,6 @@ export class CreateProductDto {
   description: string;
 
   @IsOptional()
-  @IsArray()
-  categorys?: Array<number>;
+  @IsNumber({}, { message: 'O preço deve ser um número' })
+  id_category: number;
 }

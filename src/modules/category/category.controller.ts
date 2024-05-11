@@ -32,20 +32,16 @@ export class CategoryController {
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    const optionsFind = {
+    const options = {
       where: {
         id: +id,
       },
       include: {
-        product_category: {
-          select: {
-            product: true,
-          },
-        },
+        other_product: true,
       },
     };
 
-    const category = await this.categoryService.findOne(optionsFind);
+    const category = await this.categoryService.findOne(options);
 
     return { category, message: handleMessage('read') };
   }

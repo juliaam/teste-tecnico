@@ -34,20 +34,16 @@ export class ProductController {
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    const optionsFind: OptionsFind = {
+    const options: OptionsFind = {
       where: {
         id: +id,
       },
       include: {
-        product_category: {
-          include: {
-            category: true,
-          },
-        },
+        category: true,
       },
     };
 
-    const product = await this.productService.findOne(optionsFind);
+    const product = await this.productService.findOne(options);
 
     return { product, message: handleMessage('read') };
   }
