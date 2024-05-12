@@ -1,28 +1,23 @@
-import {
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateProductDto {
-  @IsNotEmpty({ message: 'O preço não pode ser vazio' })
-  @IsNumber({}, { message: 'O preço deve ser um número' })
+  @IsNotEmpty({ message: 'price não pode ser vazio' })
+  @IsNumber({}, { message: 'price deve ser um número' })
   price: number;
 
-  @IsNotEmpty({ message: 'O nome não pode ser vazio' })
-  @IsString({ message: 'O nome deve ser um texto' })
+  @IsNotEmpty({ message: 'name não pode ser vazio' })
+  @IsString({ message: 'name deve ser um texto' })
   name: string;
 
-  @IsNotEmpty({ message: 'A imagem não pode ser vazia' })
-  @IsString({ message: 'A imagem deve ser um texto' })
+  @IsNotEmpty({ message: 'image não pode ser vazia' })
+  @IsString({ message: 'image deve ser um texto' })
   image: string;
 
-  @IsNotEmpty({ message: 'A descrição não pode ser vazia' })
-  @IsString({ message: 'A descrição deve ser um texto' })
+  @IsNotEmpty({ message: 'description não pode ser vazia' })
+  @IsString({ message: 'description deve ser um texto' })
   description: string;
 
-  @IsOptional()
-  @IsNumber({}, { message: 'O preço deve ser um número' })
-  id_category: number;
+  @IsNotEmpty({ message: 'idCategory não pode ser vazio' })
+  @IsNumber({}, { message: 'A categoria deve ser um número' })
+  idCategory: number;
 }

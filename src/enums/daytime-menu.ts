@@ -1,9 +1,7 @@
-export const daytime = {
-  day: 'day',
-  nigth: 'nigth',
-};
+import { DayTime } from '@prisma/client';
 
-export interface daytime {
-  day: 'day';
-  night: 'night';
-}
+export type TDayTime = keyof typeof DayTime;
+
+export const DayTimeEnum = {
+  ...DayTime,
+};

@@ -8,45 +8,46 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model category {
-  id      Int       @id(map: "Category_pkey") @default(autoincrement())
-  name    String?   @db.VarChar
-  product product[]
+model Category {
+  id      Int       @id @default(autoincrement())
+  name    String    @db.VarChar
+  product Product[]
+
+  @@map("Categories")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model product {
-  id           Int            @id(map: "Product_pkey") @default(autoincrement())
-  name         String         @db.VarChar
-  image        String?        @db.VarChar
-  description  String?        @db.VarChar
-  price        Float?         @db.Real
-  id_category  Int
-  menu_product menu_product[]
-  category     category       @relation(fields: [id_category], references: [id], onDelete: NoAction, onUpdate: NoAction)
+model Product {
+  id          Int           @id @default(autoincrement())
+  name        String        @db.VarChar
+  image       String        @db.VarChar
+  description String        @db.VarChar
+  price       Float         @db.DoublePrecision
+  idCategory  Int           @map("id_category")
+  menuProduct MenuProduct[]
+  category    Category      @relation(fields: [idCategory], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("Products")
 }
 
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model menu {
-  id           Int            @id @default(autoincrement())
-  name         String?        @db.VarChar
-  created_at   DateTime?      @default(dbgenerated("(now() AT TIME ZONE 'utc'::text)")) @db.Timestamptz(6)
-  daytime      DayTime        @default(day)
-  menu_product menu_product[]
+model Menu {
+  id          Int           @id @default(autoincrement())
+  name        String?       @db.VarChar
+  createdAt   DateTime      @default(now()) @map("created_at")
+  daytime     DayTime       @default(day)
+  MenuProduct MenuProduct[]
+
+  @@map("Menus")
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model menu_product {
-  id         Int      @id @default(autoincrement())
-  created_at DateTime @default(now()) @db.Timestamptz(6)
-  id_menu    Int
-  id_product Int
-  menu       menu     @relation(fields: [id_menu], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  product    product  @relation(fields: [id_product], references: [id], onDelete: NoAction, onUpdate: NoAction)
+model MenuProduct {
+  createdAt DateTime @default(now()) @map("created_at")
+  idMenu    Int
+  idProduct Int
+  menu      Menu     @relation(fields: [idMenu], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  product   Product  @relation(fields: [idProduct], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([idMenu, idProduct])
+  @@map("MenuProducts")
 }
 
 enum DayTime {

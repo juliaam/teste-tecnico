@@ -6,15 +6,11 @@ import {
   Patch,
   Param,
   Delete,
-  NotFoundException,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { handleMessage } from 'src/helpers/SucessMessage';
-import { Options } from 'src/types/OptionsFind';
-import { Prisma } from '@prisma/client';
-
+import { TypeResponse, handleMessage } from 'src/helpers/SucessMessage';
 @Controller('category')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
@@ -22,61 +18,34 @@ export class CategoryController {
   @Post()
   async create(@Body() createCategoryDto: CreateCategoryDto) {
     const category = await this.categoryService.create(createCategoryDto);
-    return { category, message: handleMessage('create') };
+    return { category, message: handleMessage(TypeResponse.CREATE) };
   }
 
   @Get()
-  findAll() {
-    const options = {};
-    return this.categoryService.findAll(options);
+  async findAll() {
+    const categorys = await this.categoryService.findAll();
+
+    return { categorys, message: handleMessage(TypeResponse.READ) };
   }
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    const options: Options<Prisma.categoryInclude, Prisma.categorySelect> = {
-      where: {
-        id: +id,
-      },
-      include: {
-        product: true,
-      },
-    };
+    const category = await this.categoryService.findOne(+id);
 
-    const category = await this.categoryService.findOne(options);
-
-    return { category, message: handleMessage('read') };
+    return { category, message: handleMessage(TypeResponse.READ) };
   }
 
   @Patch(':id')
   async update(@Param('id') id: string, @Body() body: UpdateCategoryDto) {
-    const category = await this.categoryService.findOne({
-      where: { id: +id },
-    });
-
-    if (!category) {
-      throw new NotFoundException('Produto não encontrado');
-    }
-
-    const newCategory = await this.categoryService.update(+id, body);
-    return { newCategory, message: handleMessage('update') };
+    const category = await this.categoryService.update(+id, body);
+    // console.log(category, 'cat');
+    return { category, message: handleMessage(TypeResponse.UPDATE) };
   }
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    const opt = {
-      where: {
-        id: +id,
-      },
-    };
+    const category = await this.categoryService.remove(+id);
 
-    const category = await this.categoryService.findOne(opt);
-
-    if (!category) {
-      throw new NotFoundException('Produto não encontrado');
-    }
-
-    const deletedCategory = await this.categoryService.remove(+id);
-
-    return { deletedCategory, message: handleMessage('delete') };
+    return { category, message: handleMessage(TypeResponse.DELETE) };
   }
 }

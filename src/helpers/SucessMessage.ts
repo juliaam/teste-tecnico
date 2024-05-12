@@ -1,12 +1,17 @@
-export function handleMessage(type: 'create' | 'update' | 'read' | 'delete') {
-  switch (type) {
-    case 'create':
-      return `Sucesso ao criar item`;
-    case 'update':
-      return 'Sucesso ao atualizar item';
-    case 'read':
-      return 'Sucesso ao buscar item';
-    case 'delete':
-      return 'Sucesso ao excluir item';
-  }
+export enum TypeResponse {
+  CREATE = 'create',
+  UPDATE = 'update',
+  READ = 'read',
+  DELETE = 'delete',
+}
+
+export function handleMessage(type: TypeResponse) {
+  const mapper = {
+    CREATE: 'Sucesso ao criar item',
+    UPDATE: 'Sucesso ao atualizar item',
+    READ: 'Sucesso ao buscar item',
+    DELETE: 'Sucesso ao excluir item',
+  };
+
+  return mapper[type];
 }

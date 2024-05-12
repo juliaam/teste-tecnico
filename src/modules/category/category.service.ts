@@ -1,9 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { Options } from 'src/types/OptionsFind';
-import { Prisma } from '@prisma/client';
+import { PrismaService } from '@/prisma/prisma.service';
+import { CategoryOptionsPrisma } from 'src/prisma/helpers/options-prisma.type';
+
 @Injectable()
 export class CategoryService {
   constructor(private prisma: PrismaService) {}
@@ -14,40 +18,66 @@ export class CategoryService {
     });
   }
 
-  async findAll(options) {
-    const [category, count] = await Promise.all([
-      this.prisma.category.findMany(options),
-      this.prisma.category.count({
-        where: options.where || {},
-      }),
-    ]);
-    return { rows: category, count };
+  async findAll() {
+    return this.prisma.category.findMany();
   }
 
-  async findOne(
-    optFind: Options<Prisma.categoryInclude, Prisma.categorySelect>,
-  ) {
-    try {
-      return await this.prisma.category.findFirstOrThrow(optFind);
-    } catch (error) {
-      throw new NotFoundException('Produto não encontrado');
-    }
+  async findOne(id: number) {
+    const category = await this.findFirst({
+      where: { id },
+      include: {
+        product: true,
+      },
+    });
+
+    if (!category) throw new NotFoundException('Categoria não encontrada');
+
+    return category;
   }
 
-  update(id: number, data: UpdateCategoryDto) {
-    return this.prisma.category.update({
+  async update(id: number, body: UpdateCategoryDto) {
+    const categoryExists = await this.findFirst({
+      where: { id },
+    });
+
+    if (!categoryExists)
+      throw new NotFoundException('Categoria não encontrada');
+
+    const category = await this.prisma.category.update({
       where: {
         id: id,
       },
-      data: data,
+      data: body,
     });
+
+    return category;
   }
 
-  remove(id: number) {
+  async remove(id: number) {
+    const categoryExists = await this.findFirst({
+      where: { id },
+    });
+
+    if (!categoryExists)
+      throw new NotFoundException('Categoria não encontrada');
+
+    const isProductBond = await this.prisma.product.findMany({
+      where: {
+        idCategory: id,
+      },
+    });
+
+    if (isProductBond.length > 0)
+      throw new BadRequestException('Existem produtos vinculados');
+
     return this.prisma.category.delete({
       where: {
         id: id,
       },
     });
+  }
+
+  private findFirst(options: CategoryOptionsPrisma) {
+    return this.prisma.category.findFirst(options);
   }
 }

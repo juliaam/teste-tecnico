@@ -1,11 +1,14 @@
-import { IsEnum, IsString } from 'class-validator';
-import { daytime } from 'src/enums/daytime-menu';
+import { IsArray, IsEnum, IsString } from 'class-validator';
+import { DayTimeEnum, TDayTime } from 'src/enums/daytime-menu';
 export class CreateMenuDto {
   @IsString()
   name: string;
 
-  @IsEnum(daytime, {
+  @IsEnum(DayTimeEnum, {
     message: 'daytime deve ser algumas dessas opções: day, night',
   })
-  daytime: 'day' | 'night';
+  daytime: TDayTime;
+
+  @IsArray()
+  products: number[];
 }

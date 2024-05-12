@@ -6,15 +6,11 @@ import {
   Patch,
   Param,
   Delete,
-  NotFoundException,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { Options } from 'src/types/OptionsFind';
-
-import { handleMessage } from 'src/helpers/SucessMessage';
-import { Prisma } from '@prisma/client';
+import { TypeResponse, handleMessage } from 'src/helpers/SucessMessage';
 
 @Controller('product')
 export class ProductController {
@@ -24,61 +20,33 @@ export class ProductController {
   async create(@Body() body: CreateProductDto) {
     const product = await this.productService.create(body);
 
-    return { product, message: handleMessage('create') };
+    return { product, message: handleMessage(TypeResponse.CREATE) };
   }
 
   @Get()
-  findAll() {
-    const options = {};
-    return this.productService.findAll(options);
+  async findAll() {
+    const products = this.productService.findAll();
+    return { products, message: handleMessage(TypeResponse.READ) };
   }
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    const options: Options<Prisma.productInclude, Prisma.productSelect> = {
-      where: {
-        id: +id,
-      },
-      include: {
-        category: true,
-      },
-    };
+    const product = await this.productService.findOne(+id);
 
-    const product = await this.productService.findOne(options);
-
-    return { product, message: handleMessage('read') };
+    return { product, message: handleMessage(TypeResponse.READ) };
   }
 
   @Patch(':id')
   async update(@Param('id') id: string, @Body() body: UpdateProductDto) {
-    const product = await this.productService.findOne({
-      where: { id: +id },
-    });
+    const product = await this.productService.update(+id, body);
 
-    if (!product) {
-      throw new NotFoundException('Produto não encontrado');
-    }
-
-    const newProduct = await this.productService.update(+id, body);
-    return { newProduct, message: handleMessage('update') };
+    return { product, message: handleMessage(TypeResponse.UPDATE) };
   }
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    const opt = {
-      where: {
-        id: +id,
-      },
-    };
+    const product = await this.productService.remove(+id);
 
-    const product = await this.productService.findOne(opt);
-
-    if (!product) {
-      throw new NotFoundException('Produto não encontrado');
-    }
-
-    const deletedProduct = await this.productService.remove(+id);
-
-    return { deletedProduct, message: handleMessage('delete') };
+    return { product, message: handleMessage(TypeResponse.DELETE) };
   }
 }

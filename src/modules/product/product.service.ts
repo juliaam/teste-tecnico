@@ -2,8 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Prisma } from '@prisma/client';
-import { Options } from 'src/types/OptionsFind';
+import { ProductOptionsPrisma } from 'src/prisma/helpers/options-prisma.type';
+
 @Injectable()
 export class ProductService {
   constructor(private prisma: PrismaService) {}
@@ -12,36 +12,52 @@ export class ProductService {
       data: body,
     });
   }
-  async findAll(options) {
-    const [product, count] = await Promise.all([
-      this.prisma.product.findMany(options),
-      this.prisma.product.count({
-        where: options.where || {},
-      }),
-    ]);
-    return { rows: product, count };
+  async findAll() {
+    return this.prisma.product.findMany();
   }
 
-  async findOne(options: Options<Prisma.productInclude, Prisma.productSelect>) {
-    try {
-      return await this.prisma.product.findFirstOrThrow(options);
-    } catch (error) {
-      throw new NotFoundException(error.message);
-    }
+  async findOne(id: number) {
+    const product = await this.findFirst({
+      where: { id },
+    });
+
+    if (!product) throw new NotFoundException('Produto não encontrado');
+
+    return product;
   }
 
   async update(id: number, body: UpdateProductDto) {
-    return this.prisma.product.update({
+    const productExists = await this.findFirst({
       where: { id },
+    });
+
+    if (!productExists) throw new NotFoundException('Produto não encontrado');
+
+    const product = await this.prisma.product.update({
+      where: {
+        id: id,
+      },
       data: body,
     });
+
+    return product;
   }
 
-  remove(id: number) {
-    return this.prisma.product.delete({
+  async remove(id: number) {
+    const categoryExists = await this.findFirst({
+      where: { id },
+    });
+
+    if (!categoryExists) throw new NotFoundException('Produto não encontrada');
+
+    return this.prisma.category.delete({
       where: {
         id: id,
       },
     });
+  }
+
+  private findFirst(options: ProductOptionsPrisma) {
+    return this.prisma.product.findFirst(options);
   }
 }

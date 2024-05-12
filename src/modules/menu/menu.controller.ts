@@ -11,9 +11,7 @@ import {
 import { MenuService } from './menu.service';
 import { CreateMenuDto } from './dto/create-menu.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
-import { handleMessage } from 'src/helpers/SucessMessage';
-import { Prisma } from '@prisma/client';
-import { Options } from 'src/types/OptionsFind';
+import { TypeResponse, handleMessage } from 'src/helpers/SucessMessage';
 
 @Controller('menu')
 export class MenuController {
@@ -22,7 +20,7 @@ export class MenuController {
   @Post()
   async create(@Body() body: CreateMenuDto) {
     const menu = await this.menuService.create(body);
-    return { menu, message: handleMessage('create') };
+    return { menu, message: handleMessage(TypeResponse.CREATE) };
   }
 
   @Get('/daytime')
@@ -30,72 +28,34 @@ export class MenuController {
     const hour = new Date('2024-05-10T04:04:00').getHours();
     const daytime = hour >= 4 && hour <= 18 ? 'day' : 'night';
 
-    const opt = {
-      where: {
-        daytime: daytime,
-      },
-      include: {
-        menu_product: {
-          select: {
-            product: true,
-          },
-        },
-      },
-    };
-
-    const menu = await this.menuService.findOne(opt);
-    return menu;
+    const menu = await this.menuService.daytime(daytime);
+    return { menu, message: handleMessage(TypeResponse.READ) };
   }
 
   @Get()
-  findAll() {
-    const options = {};
-    return this.menuService.findAll(options);
+  async findAll() {
+    const menu = await this.menuService.findAll();
+    return { menu, message: handleMessage(TypeResponse.READ) };
   }
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    const optFind = {
-      where: {
-        id: +id,
-      },
-    };
+    const menu = this.menuService.findOne(+id);
 
-    const menu = await this.menuService.findOne(optFind);
-
-    return { menu, message: handleMessage('read') };
+    return { menu, message: handleMessage(TypeResponse.READ) };
   }
 
   @Patch(':id')
   async update(@Param('id') id: string, @Body() body: UpdateMenuDto) {
-    const menu = await this.menuService.findOne({
-      where: { id: +id },
-    });
+    const menu = await this.menuService.update(+id, body);
 
-    if (!menu) {
-      throw new NotFoundException('Produto não encontrado');
-    }
-
-    const newMenu = await this.menuService.update(+id, body);
-    return { newMenu, message: handleMessage('update') };
+    return { menu, message: handleMessage(TypeResponse.UPDATE) };
   }
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    const opt = {
-      where: {
-        id: +id,
-      },
-    };
+    const menu = await this.menuService.remove(+id);
 
-    const menu = await this.menuService.findOne(opt);
-
-    if (!menu) {
-      throw new NotFoundException('Produto não encontrado');
-    }
-
-    const deletedMenu = await this.menuService.remove(+id);
-
-    return { deletedMenu, message: handleMessage('delete') };
+    return { menu, message: handleMessage(TypeResponse.DELETE) };
   }
 }
