@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CategoryService } from './category.service';
 import { PrismaService } from '@/prisma/prisma.service';
 import { NotFoundException } from '@nestjs/common';
-import { ProductService } from '../product/product.service';
 
 const fakeCategorys = [
   {
@@ -44,8 +43,8 @@ describe('CategoryService', () => {
 
     service = module.get<CategoryService>(CategoryService);
     prismaServiceMock = module.get<PrismaService>(PrismaService);
-    productServiceMock = module.get<ProductService>(ProductService);
   });
+
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -100,49 +99,35 @@ describe('CategoryService', () => {
       });
     });
 
-    // it(`should return a notFoundException when category is not found`, async () => {
-    //   jest
-    //     .spyOn(prismaServiceMock.category, 'findFirst')
-    //     .mockResolvedValue(new NotFoundException('Categoria não encontrada'));
+    it(`should return a notFoundException when category is not found`, async () => {
+      const response = await service.findOne(99);
+      jest
+        .spyOn(prismaServiceMock.category, 'create')
+        .mockRejectedValue(new NotFoundException('NotFoundException'));
 
-    //   const response = await service.findOne(99);
-
-    //   expect(response).toEqual(
-    //     new NotFoundException('Categoria não encontrada'),
-    //   );
-    //   expect(prismaServiceMock.category.findFirst).toHaveBeenCalledTimes(1);
-    //   expect(prismaServiceMock.category.findFirst).toHaveBeenCalledWith({
-    //     where: { id: 99 },
-    //   });
-    // });
+      expect(response).toEqual(
+        new NotFoundException('Categoria não encontrada'),
+      );
+      expect(prismaServiceMock.category.findFirst).toHaveBeenCalledTimes(1);
+      expect(prismaServiceMock.category.findFirst).toHaveBeenCalledWith({
+        where: { id: 99 },
+      });
+    });
     describe('deleteOne', () => {
-      it(`should delete category and return a body`, async () => {
-        const request = await service.remove(1);
-        console.log(request);
+      it(`should return NotFoundException if category does not exist`, async () => {
+        jest
+          .spyOn(prismaServiceMock.category, 'delete')
+          .mockRejectedValue(new Error());
 
-        expect(request).toBe(fakeCategorys[0]);
+        const request = await service.remove(fakeCategorys[0].id);
+
+        expect(request).toEqual(new NotFoundException());
+
         expect(prismaServiceMock.category.delete).toHaveBeenCalledTimes(1);
         expect(prismaServiceMock.category.delete).toHaveBeenCalledWith({
-          where: { id: 1 },
+          where: { id: 99 },
         });
       });
-
-      // it(`should return NotFoundException if category does not exist`, async () => {
-      //   jest
-      //     .spyOn(prismaServiceMock.category, 'delete')
-      //     .mockRejectedValue(new Error());
-
-      //   try {
-      //     await service.remove(99);
-      //   } catch (error) {
-      //     expect(error).toEqual(new NotFoundException());
-      //   }
-
-      //   expect(prismaServiceMock.category.delete).toHaveBeenCalledTimes(1);
-      //   expect(prismaServiceMock.category.delete).toHaveBeenCalledWith({
-      //     where: { id: 99 },
-      //   });
-      // });
     });
   });
 });

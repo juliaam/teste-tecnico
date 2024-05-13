@@ -71,21 +71,24 @@ export class MenuService {
     return menu;
   }
 
-  update(id: number, body: UpdateMenuDto) {
-    return this.prisma.menu.update({
+  async update(id: number, body: UpdateMenuDto) {
+    const menu = await this.prisma.menu.update({
       where: {
         id: id,
       },
       data: {
         name: body.name,
         daytime: body.daytime,
-        // MenuProduct: {
-        //   connect: {
-        //     idMenu_idProduct:
-        //   },
-        // },
+        MenuProduct: {
+          deleteMany: {},
+          create: body.products.map((idProduct) => ({ idProduct: idProduct })),
+        },
+      },
+      include: {
+        MenuProduct: true,
       },
     });
+    return menu;
   }
 
   async remove(id: number) {
