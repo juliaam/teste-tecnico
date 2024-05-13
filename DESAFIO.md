@@ -1,6 +1,6 @@
 Qual foi a maior dificuldade que você enfrentou ao realizar o teste?
 
-O tempo, com certeza foi o maior fator de dificuldade. Se tornou difícil fazer o ideal por conta do tempo, mesmo já sabendo o que fazer
+O tempo, com certeza foi o maior fator de dificuldade. Se tornou difícil fazer o ideal por conta do tempo, mesmo já sabendo o que fazer. Por exemplo, não consegui me autenticar na AWS, mas apesar de ter outros serviços, não consegui encontrar outro a tempo, prejudicando o funcionamento dos links de imagens
 
  • Descreva a funcionalidade e o por quê da utilização das bibliotecas 
 escolhidas por você para concluir o desafio.
