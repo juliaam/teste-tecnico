@@ -25,7 +25,7 @@ export class ProductController {
 
   @Get()
   async findAll() {
-    const products = this.productService.findAll();
+    const products = await this.productService.findAll();
     return { products, message: handleMessage(TypeResponse.READ) };
   }
 

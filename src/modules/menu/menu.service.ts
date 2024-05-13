@@ -32,14 +32,8 @@ export class MenuService {
       },
       include: {
         MenuProduct: {
-          select: {
-            product: {
-              select: {
-                name: true,
-                description: true,
-                price: true,
-              },
-            },
+          include: {
+            product: true,
           },
         },
       },
@@ -47,7 +41,13 @@ export class MenuService {
 
     if (!menu) throw new NotFoundException('Menu não encontrado');
 
-    return menu;
+    const { MenuProduct, ...rest } = menu;
+    const menuMapped = {
+      ...rest,
+      products: MenuProduct.map(({ product }) => product),
+    };
+
+    return menuMapped;
   }
 
   async findAll() {

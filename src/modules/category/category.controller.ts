@@ -23,9 +23,9 @@ export class CategoryController {
 
   @Get()
   async findAll() {
-    const categorys = await this.categoryService.findAll();
+    const categories = await this.categoryService.findAll();
 
-    return { categorys, message: handleMessage(TypeResponse.READ) };
+    return { categories, message: handleMessage(TypeResponse.READ) };
   }
 
   @Get(':id')
@@ -38,7 +38,7 @@ export class CategoryController {
   @Patch(':id')
   async update(@Param('id') id: string, @Body() body: UpdateCategoryDto) {
     const category = await this.categoryService.update(+id, body);
-    // console.log(category, 'cat');
+
     return { category, message: handleMessage(TypeResponse.UPDATE) };
   }
 
