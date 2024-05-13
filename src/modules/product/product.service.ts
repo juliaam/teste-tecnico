@@ -13,7 +13,16 @@ export class ProductService {
     });
   }
   async findAll() {
-    return this.prisma.product.findMany();
+    const options = {
+      include: {
+        category: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    };
+    return this.prisma.product.findMany(options);
   }
 
   async findOne(id: number) {
